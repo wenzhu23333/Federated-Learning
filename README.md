@@ -3,9 +3,11 @@ An open source ferderated learning implement based on Pytorch.
 
 (开源联邦学习实现)
 ## Dataset
-Do not need to download dataset since this repository already includes all the dataset.
+Your need to download dataset, except for Femnist dataset, since this repository already includes the dataset.
 
-（不需要下载数据集，因为本仓库已经包含了）
+You can run the code and other datasets will be downloaded automatically.
+
+（需要下载数据集，但是Femnist不用，因为本仓库已经包含了Femnist Dataset，其他dataset直接运行code就会自动下载。）
 ### Mnist
 IID:
 
