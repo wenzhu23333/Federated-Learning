@@ -75,14 +75,9 @@ class CNNFemnist(nn.Module):
     def __init__(self, args):
         super().__init__()
         self.conv1 = nn.Conv2d(1, 32, 7, padding=3)
-        # self.conv1 = nn.Conv2d(1, 32, 5, padding=2)
         self.act = nn.ReLU()
         self.pool = nn.MaxPool2d(2, 2)
         self.conv2 = nn.Conv2d(32, 64, 3, padding=1)
-        # self.conv2 = nn.Conv2d(32, 64, 5, padding=2)
-        # self.conv2 = nn.Conv2d(32, 32, 5, padding=2)
-        # self.dense1 = nn.Linear(64 * 7 * 7, 2048)
-        # self.dense2 = nn.Linear(2048, 62)
         self.out = nn.Linear(64 * 7 * 7, 62)
 
     def forward(self, x):
@@ -92,3 +87,36 @@ class CNNFemnist(nn.Module):
         x = x.flatten(1)
         # return self.dense2(self.act(self.dense1(x)))
         return self.out(x)
+
+
+class CharLSTM(nn.Module):
+    def __init__(self, batch_size):
+        super(CharLSTM, self).__init__()
+        self.embed = nn.Embedding(80, 8)
+        self.lstm = nn.LSTM(8, 256, 2, batch_first=True)
+        self.h0 = torch.zeros(2, batch_size, 256).requires_grad_()
+        self.drop = nn.Dropout()
+        self.out = nn.Linear(256, 80)
+
+    def forward(self, x):
+        x = self.embed(x)
+        if self.h0.size(1) == x.size(0):
+            self.h0.data.zero_()
+            # self.c0.data.zero_()
+        else:
+            # resize hidden vars
+            device = next(self.parameters()).device
+            self.h0 = torch.zeros(2, x.size(0), 256).to(device).requires_grad_()
+        x, hidden = self.lstm(x, self.h0.detach())
+        x = self.drop(x)
+        # x = x.contiguous().view(-1, 256)
+        # x = x.contiguous().view(-1, 256)
+        return self.out(x[:, -1, :]), hidden
+
+    # def init_hidden(self, batch_size):
+    #     weight = next(self.parameters()).data
+    #
+    #     initial_hidden = (weight.new(2, batch_size, 256).zero_(),
+    #                       weight.new(2, batch_size, 256).zero_())
+    #
+    #     return initial_hidden

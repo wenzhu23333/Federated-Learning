@@ -34,7 +34,7 @@ class LocalUpdate(object):
         net.train()
         # train and update
         optimizer = torch.optim.SGD(net.parameters(), lr=self.args.lr, momentum=self.args.momentum)
-        scheduler = torch.optim.lr_scheduler.StepLR(optimizer,step_size=1,gamma=self.args.lr_decay)
+        scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=1, gamma=self.args.lr_decay)
 
         epoch_loss = []
         for iter in range(self.args.local_ep):
@@ -42,7 +42,9 @@ class LocalUpdate(object):
             for batch_idx, (images, labels) in enumerate(self.ldr_train):
                 images, labels = images.to(self.args.device), labels.to(self.args.device)
                 net.zero_grad()
-                log_probs = net(images)
+                log_probs, hidden = net(images)
+                # print(list(log_probs.size()))
+                # print(labels)
                 loss = self.loss_func(log_probs, labels)
                 loss.backward()
                 optimizer.step()

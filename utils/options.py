@@ -40,16 +40,6 @@ def args_parser():
     parser.add_argument('--stopping_rounds', type=int, default=10, help='rounds of early stopping')
     parser.add_argument('--verbose', action='store_true', help='verbose print')
     parser.add_argument('--seed', type=int, default=1, help='random seed (default: 1)')
-    parser.add_argument('--noise', type=float, default=0.1, help='DP noise')
-    parser.add_argument('--niss', type=float, default=0.5, help='niss')
-
-    parser.add_argument('--mode', type=int, default=0, help='running mode')
-    #  0 = the PS random select, 1 = the client random join, 2 = fixed the number of client.
-    parser.add_argument('--x_axis_unit', type=int, default=0, help='the unit of x axis')
-    # 0 = the training round, 1 = the training time.
-    parser.add_argument('--tier_selection', type=int, default=0, help='the Selection probabilities of tiers')
-    # 0 = slow, 1 = random, 2 = uniform, 3 = fast
-
 
     args = parser.parse_args()
     return args

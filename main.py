@@ -13,10 +13,10 @@ import torch
 from utils.sampling import mnist_iid, mnist_noniid, cifar_iid,cifar_noniid
 from utils.options import args_parser
 from models.Update import LocalUpdate
-from models.Nets import MLP, CNNMnist, CNNCifar, CNNFemnist
+from models.Nets import MLP, CNNMnist, CNNCifar, CNNFemnist, CharLSTM
 from models.Fed import FedAvg
 from models.test import test_img
-from utils.dataset import FEMNIST
+from utils.dataset import FEMNIST, ShakeSpeare
 
 
 if __name__ == '__main__':
@@ -71,6 +71,15 @@ if __name__ == '__main__':
             exit('Error: femnist dataset is naturally non-iid')
         else:
             print("Warning: The femnist dataset is naturally non-iid, you do not need to specify iid or non-iid")
+    elif args.dataset == 'shakespeare':
+        dataset_train = ShakeSpeare(train=True)
+        dataset_test = ShakeSpeare(train=False)
+        dict_users = dataset_train.get_client_dic()
+        args.num_users = len(dict_users)
+        if args.iid:
+            exit('Error: ShakeSpeare dataset is naturally non-iid')
+        else:
+            print("Warning: The ShakeSpeare dataset is naturally non-iid, you do not need to specify iid or non-iid")
     else:
         exit('Error: unrecognized dataset')
     img_size = dataset_train[0][0].shape
@@ -82,6 +91,8 @@ if __name__ == '__main__':
         net_glob = CNNMnist(args=args).to(args.device)
     elif args.dataset == 'femnist' and args.model == 'cnn':
         net_glob = CNNFemnist(args=args).to(args.device)
+    elif args.dataset == 'shakespeare' and args.model == 'lstm':
+        net_glob = CharLSTM().to(args.device)
     elif args.model == 'mlp':
         len_in = 1
         for x in img_size:
