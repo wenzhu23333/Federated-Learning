@@ -109,21 +109,17 @@ if __name__ == '__main__':
     w_glob = net_glob.state_dict()
 
     # training
-    loss_train = []
     acc_test = []
-    training_time = []
-    cv_loss, cv_acc = [], []
-    val_loss_pre, counter = 0, 0
-    net_best = None
-    best_loss = None
-    val_acc_list, net_list = [], []
+    learning_rate = [args.lr for i in range(args.num_users)]
     for iter in range(args.epochs):
         w_locals, loss_locals = [], []
         m = max(int(args.frac * args.num_users), 1)
         idxs_users = np.random.choice(range(args.num_users), m, replace=False)
         for idx in idxs_users:
+            args.lr = learning_rate[idx]
             local = LocalUpdate(args=args, dataset=dataset_train, idxs=dict_users[idx])
-            w, loss = local.train(net=copy.deepcopy(net_glob).to(args.device))
+            w, loss, curLR = local.train(net=copy.deepcopy(net_glob).to(args.device))
+            learning_rate[idx] = curLR
             w_locals.append(copy.deepcopy(w))
             loss_locals.append(copy.deepcopy(loss))
 
@@ -132,18 +128,11 @@ if __name__ == '__main__':
         # copy weight to net_glob
         net_glob.load_state_dict(w_glob)
 
-        # print loss
-        # loss_avg = sum(loss_locals) / len(loss_locals)
-        # print('Round {:3d}, Average loss {:.3f}'.format(iter, loss_avg))
-        # loss_train.append(loss_avg)
-
         # print accuracy
         net_glob.eval()
-        # acc_train, loss_train = test_img(net_glob, dataset_train, args)
         acc_t, loss_t = test_img(net_glob, dataset_test, args)
         print("Round {:3d},Testing accuracy: {:.2f}".format(iter, acc_t))
 
-        loss_train.append(loss_t)
         acc_test.append(acc_t.item())
 
 
