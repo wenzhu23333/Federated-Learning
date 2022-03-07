@@ -9,6 +9,7 @@ import copy
 import numpy as np
 from torchvision import datasets, transforms
 import torch
+import os
 
 from utils.sampling import mnist_iid, mnist_noniid, cifar_iid,cifar_noniid
 from utils.options import args_parser
@@ -135,8 +136,10 @@ if __name__ == '__main__':
 
         acc_test.append(acc_t.item())
 
-
-    accfile = open('./log/accfile_fed_{}_{}_{}_iid{}.dat'.
+    rootpath = './log'
+    if not os.path.exists(rootpath):
+        os.makedirs(rootpath)
+    accfile = open(rootpath + '/accfile_fed_{}_{}_{}_iid{}.dat'.
                    format(args.dataset, args.model, args.epochs, args.iid), "w")
 
     for ac in acc_test:
@@ -149,7 +152,7 @@ if __name__ == '__main__':
     plt.figure()
     plt.plot(range(len(acc_test)), acc_test)
     plt.ylabel('test accuracy')
-    plt.savefig('./log/fed_{}_{}_{}_C{}_iid{}_acc.png'.format(args.dataset, args.model, args.epochs, args.frac, args.iid))
+    plt.savefig(rootpath + '/fed_{}_{}_{}_C{}_iid{}_acc.png'.format(args.dataset, args.model, args.epochs, args.frac, args.iid))
 
 
 

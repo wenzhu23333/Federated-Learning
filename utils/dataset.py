@@ -28,8 +28,8 @@ class FEMNIST(Dataset):
             train_data_x = []
             train_data_y = []
             for i in range(len(train_clients)):
-                if i == 100:
-                    break
+                # if i == 100:
+                #     break
                 self.dic_users[i] = set()
                 l = len(train_data_x)
                 cur_x = train_data_temp[train_clients[i]]['x']
@@ -195,12 +195,9 @@ def read_data(train_data_dir, test_data_dir):
     return train_clients, train_groups, train_data, test_data
 
 
-if __name__ == '__main__':
-    test = ShakeSpeare(train=True)
-    x = test.get_client_dic()
-    print(len(x))
-    t = 0
-    for k in x[0]:
-        t += 1
-        data, label = test.__getitem__(k)
-    print(t)
+# if __name__ == '__main__':
+#     test = ShakeSpeare(train=True)
+#     x = test.get_client_dic()
+#     print(len(x))
+#     for i in range(100):
+#         print(len(x[i]))
