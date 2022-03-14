@@ -16,11 +16,11 @@ You can run the code and other datasets will be downloaded automatically.
 ### Mnist
 IID:
 
-python main.py --dataset mnist --iid --num_channels 1 --model cnn --epochs 50 --gpu 0 
+python main.py --dataset mnist --iid --num_channels 1 --model cnn --epochs 50 --gpu 0 --lr 0.01
 
 non-IID:
 
-python main.py --dataset mnist --num_channels 1 --model cnn --epochs 50 --gpu 0 
+python main.py --dataset mnist --num_channels 1 --model cnn --epochs 50 --gpu 0 --lr 0.01
 ### Femnist
 Femnist is naturally non-IID
 
@@ -30,7 +30,7 @@ This dataset is sampled from project leaf: https://leaf.cmu.edu/, using command
 
 You can run using this:
 
-python main.py --dataset femnist --num_channels 1 --model cnn --epochs 50 --gpu 0 
+python main.py --dataset femnist --num_channels 1 --model cnn --epochs 50 --gpu 0 --lr 0.01
 
 ### Shakespeare
 
@@ -42,25 +42,25 @@ This dataset is sampled from project leaf: https://leaf.cmu.edu/, using command
 
 You can run using this:
 
-python main.py --dataset shakespeare --model lstm --epochs 50 --gpu 0 
+python main.py --dataset shakespeare --model lstm --epochs 50 --gpu 0 --lr 1.4
 
 ### Cifar-10
 IID:
 
-python main.py --dataset cifar --iid --num_channels 3 --model cnn --epochs 50 --gpu 0 
+python main.py --dataset cifar --iid --num_channels 3 --model cnn --epochs 50 --gpu 0 --lr 0.02
 
 non-IID:
 
-python main.py --dataset cifar --num_channels 3 --model cnn --epochs 50 --gpu 0 
+python main.py --dataset cifar --num_channels 3 --model cnn --epochs 50 --gpu 0 --lr 0.02
 
 ### Fashion-Mnist
 
 IID:
 
-python main.py --dataset fashion-mnist --iid --num_channels 1 --model cnn --epochs 50 --gpu 0 
+python main.py --dataset fashion-mnist --iid --num_channels 1 --model cnn --epochs 50 --gpu 0 --lr 0.01 
 
 non-IID:
 
-python main.py --dataset fashion-mnist --num_channels 1 --model cnn --epochs 50 --gpu 0 
+python main.py --dataset fashion-mnist --num_channels 1 --model cnn --epochs 50 --gpu 0 --lr 0.01
 
 
