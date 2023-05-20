@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Python version: 3.6
+import random
 
 import matplotlib
 matplotlib.use('Agg')
@@ -15,12 +16,18 @@ from utils.sampling import mnist_iid, mnist_noniid, cifar_iid,cifar_noniid
 from utils.options import args_parser
 from models.Update import LocalUpdate
 from models.Nets import MLP, CNNMnist, CNNCifar, CNNFemnist, CharLSTM
-from models.Fed import FedAvg
+from models.Fed import FedWeightAvg
 from models.test import test_img
 from utils.dataset import FEMNIST, ShakeSpeare
 
 
 if __name__ == '__main__':
+
+    random.seed(123)
+    np.random.seed(123)
+    torch.manual_seed(123)
+    torch.cuda.manual_seed_all(123)
+    torch.cuda.manual_seed(123)
     # parse args
     args = args_parser()
     args.device = torch.device('cuda:{}'.format(args.gpu) if torch.cuda.is_available() and args.gpu != -1 else 'cpu')
@@ -111,21 +118,20 @@ if __name__ == '__main__':
 
     # training
     acc_test = []
-    learning_rate = [args.lr for i in range(args.num_users)]
+    clients = [LocalUpdate(args=args, dataset=dataset_train, idxs=dict_users[idx])
+               for idx in range(args.num_users)]
+    m, clients_index_array = max(int(args.frac * args.num_users), 1), range(args.num_users)
     for iter in range(args.epochs):
-        w_locals, loss_locals = [], []
-        m = max(int(args.frac * args.num_users), 1)
-        idxs_users = np.random.choice(range(args.num_users), m, replace=False)
+        w_locals, loss_locals, weight_locols= [], [], []
+        idxs_users = np.random.choice(clients_index_array, m, replace=False)
         for idx in idxs_users:
-            args.lr = learning_rate[idx]
-            local = LocalUpdate(args=args, dataset=dataset_train, idxs=dict_users[idx])
-            w, loss, curLR = local.train(net=copy.deepcopy(net_glob).to(args.device))
-            learning_rate[idx] = curLR
+            w, loss = clients[idx].train(net=copy.deepcopy(net_glob).to(args.device))
             w_locals.append(copy.deepcopy(w))
             loss_locals.append(copy.deepcopy(loss))
+            weight_locols.append(len(dict_users[idx]))
 
         # update global weights
-        w_glob = FedAvg(w_locals)
+        w_glob = FedWeightAvg(w_locals, weight_locols)
         # copy weight to net_glob
         net_glob.load_state_dict(w_glob)
 

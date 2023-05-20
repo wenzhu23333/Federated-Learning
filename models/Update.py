@@ -29,12 +29,14 @@ class LocalUpdate(object):
         self.loss_func = nn.CrossEntropyLoss()
         self.selected_clients = []
         self.ldr_train = DataLoader(DatasetSplit(dataset, idxs), batch_size=self.args.local_bs, shuffle=True)
+        self.lr = args.lr
+        self.lr_decay = args.lr_decay
 
     def train(self, net):
         net.train()
         # train and update
-        optimizer = torch.optim.SGD(net.parameters(), lr=self.args.lr, momentum=self.args.momentum)
-        scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=1, gamma=self.args.lr_decay)
+        optimizer = torch.optim.SGD(net.parameters(), lr=self.lr, momentum=self.args.momentum)
+        scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=1, gamma=self.lr_decay)
 
         epoch_loss = []
         for iter in range(self.args.local_ep):
@@ -55,5 +57,6 @@ class LocalUpdate(object):
                                100. * batch_idx / len(self.ldr_train), loss.item()))
                 batch_loss.append(loss.item())
             epoch_loss.append(sum(batch_loss)/len(batch_loss))
-        return net.state_dict(), sum(epoch_loss) / len(epoch_loss), scheduler.get_last_lr()[0]
+        self.lr = scheduler.get_last_lr()[0]
+        return net.state_dict(), sum(epoch_loss) / len(epoch_loss)
 
